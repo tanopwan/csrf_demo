@@ -1,0 +1,30 @@
+{{define "xhrjson"}}<!DOCTYPE html>
+<html>
+<script>
+    function post(withCredentials) {
+        var request = new XMLHttpRequest();
+        request.withCredentials = withCredentials;
+        request.open("POST", "http://domain1.com:1323/api/transfer3");
+        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        request.send(JSON.stringify({ "to": "badguy", "amount": 500 }));
+    }
+</script>
+<body>
+
+<h2>POST with JSON Failed With CORS</h2>
+
+<p>
+    This case is to have a form submit as POST using XMLHttpRequest.<br>
+    XMLHttpRequest has apply Cross Origin Pocily.<br>
+    So browser will block this cross domain asyncronous request.<br><br>
+
+    If the server is CORS enabled, it will pass but to make sure browser send along the cookies use 'withCredentials'.<br>
+    But the server need 'Access-Control-Allow-Credentials: true' header to allow this.
+</p>
+
+<a href="javascript:void(0);" onclick="post(false);">POST withCredentials is false</a><br>
+<a href="javascript:void(0);" onclick="post(true);">POST withCredentials is true</a><br>
+
+</body>
+</html>
+{{end}}

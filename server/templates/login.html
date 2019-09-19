@@ -1,0 +1,19 @@
+{{define "login"}}<!DOCTYPE html>
+<html>
+<body>
+
+<h2>{{.}}!</h2>
+
+<form method="POST" action="/api/login">
+  Username:<br>
+  <input type="text" name="username" value="golf">
+  <br>
+  Password:<br>
+  <input type="password" name="password" value="golf">
+  <br><br>
+  <input type="submit" value="Login">
+</form>
+
+</body>
+</html>
+{{end}}

