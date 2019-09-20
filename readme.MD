@@ -13,7 +13,7 @@
 `go run server/main.go -cors -cred`
 
 ### STart Attack Server
-`go run attacjer/main.go`
+`go run attacker/main.go`
 
 ### Refernces
 https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29
