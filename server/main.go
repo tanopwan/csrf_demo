@@ -17,10 +17,14 @@ import (
 var sessionID int
 var sessions map[int]string
 var myBalance int
+var domain string
 
 func main() {
 	corsPtr := flag.Bool("cors", false, "true to enable CORS")
 	credPtr := flag.Bool("cred", false, "true to enable credentials with")
+	domainPtr := flag.String("domain", "localhost", "domain of the cookie")
+	domain = *domainPtr
+
 	flag.Parse()
 	t := &Template{
 		templates: template.Must(template.ParseGlob("templates/*.html")),
@@ -35,7 +39,7 @@ func main() {
 		e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 			AllowCredentials: true,
 		}))
-	} else {
+	} else if *corsPtr {
 		e.Use(middleware.CORS())
 	}
 
@@ -64,7 +68,7 @@ func logout(c echo.Context) error {
 	fmt.Printf("session: %+v\n", session)
 	session.Expires = time.Now()
 	session.Path = "/"
-	session.Domain = "domain1.com"
+	session.Domain = domain
 	c.SetCookie(session)
 	return c.Redirect(http.StatusFound, "/login")
 }
@@ -79,7 +83,7 @@ func login(c echo.Context) error {
 			Name:   "session",
 			Value:  strconv.Itoa(sessionID),
 			Path:   "/",
-			Domain: "domain1.com",
+			Domain: domain,
 		}
 		c.SetCookie(&session)
 		sessionID++
