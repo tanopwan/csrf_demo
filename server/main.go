@@ -9,15 +9,19 @@ import (
 	"strconv"
 	"time"
 
-	echo "github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4"
 
 	"github.com/labstack/echo/v4/middleware"
 )
 
 var sessionID int
-var sessions map[int]string
-var myBalance int
+var sessions map[int]*UserProfile
 var domain string
+
+type UserProfile struct {
+	Name    string
+	Balance int
+}
 
 func main() {
 	corsPtr := flag.Bool("cors", false, "true to enable CORS")
@@ -30,9 +34,8 @@ func main() {
 		templates: template.Must(template.ParseGlob("templates/*.html")),
 	}
 
-	myBalance = 50000
 	sessionID = 0
-	sessions = make(map[int]string)
+	sessions = make(map[int]*UserProfile)
 	e := echo.New()
 	e.Renderer = t
 	if *corsPtr && *credPtr {
@@ -43,20 +46,26 @@ func main() {
 		e.Use(middleware.CORS())
 	}
 
-	e.GET("/", hello)
+	e.GET("/result", resultPage)
 	e.GET("/login", loginPage)
-	e.GET("/transfer", transferPage)
+	e.GET("/transfer/level1", transferLevel1Page)
+	e.GET("/transfer/level2", transferLevel2Page)
+	e.GET("/transfer/level2/1", transferLevel21Page)
 	e.POST("/api/login", login)
 	e.POST("/api/logout", logout)
 	e.GET("/api/transfer", transferGet)
 	e.POST("/api/transfer2", transferPost)
+	e.POST("/api/transfer2/1", transferPostRedirect)
 	e.POST("/api/transfer3", transferPostJSON)
 	e.PUT("/api/transfer2", transferPost)
+	e.GET("/", indexPage)
+	e.Static("/", "public")
+
 	e.Logger.Fatal(e.Start(":1323"))
 }
 
-func hello(c echo.Context) error {
-	return c.String(http.StatusOK, "Hello, World!")
+func indexPage(c echo.Context) error {
+	return c.Render(http.StatusOK, "index", nil)
 }
 
 func logout(c echo.Context) error {
@@ -78,7 +87,10 @@ func login(c echo.Context) error {
 	password := c.Request().PostFormValue("password")
 
 	if username == "golf" && password == "golf" {
-		sessions[sessionID] = "Tanopwan"
+		sessions[sessionID] = &UserProfile{
+			Name:    "Tanopwan",
+			Balance: 50000,
+		}
 		session := http.Cookie{
 			Name:   "session",
 			Value:  strconv.Itoa(sessionID),
@@ -87,78 +99,135 @@ func login(c echo.Context) error {
 		}
 		c.SetCookie(&session)
 		sessionID++
-		return c.Redirect(http.StatusFound, "/transfer")
+		return c.Redirect(http.StatusFound, "/")
 	}
 	return c.Redirect(http.StatusFound, "/login")
 }
 
+func resultPage(c echo.Context) error {
+	userProfile := validateSession(c)
+	data := struct {
+		Balance int
+	}{
+		Balance: userProfile.Balance,
+	}
+	return c.Render(http.StatusOK, "resultLv2", data)
+}
+
 func loginPage(c echo.Context) error {
-	username := validateSession(c)
-	if username != "" {
-		return c.Redirect(http.StatusFound, "/transfer")
+	userProfile := validateSession(c)
+	if userProfile.Name != "" {
+		return c.Redirect(http.StatusFound, "/transfer/level1")
 	}
 
 	return c.Render(http.StatusOK, "login", "Please login")
 }
 
-func validateSession(c echo.Context) string {
+func validateSession(c echo.Context) *UserProfile {
 	session, err := c.Cookie("session")
 	if err != nil {
 		fmt.Println("cookie is not found,", err)
-		return ""
+		return &UserProfile{}
 	}
 	value, err := strconv.Atoi(session.Value)
 	if err != nil {
 		fmt.Println("session is not number,", err)
-		return ""
+		return &UserProfile{}
 	}
 	fmt.Printf("sessions: %+v\n", sessions)
-	if username, ok := sessions[value]; ok {
-		return username
+	if userProfile, ok := sessions[value]; ok {
+		return userProfile
 	}
 
 	fmt.Println("session is not found with id ", value)
-	return ""
+	return &UserProfile{}
 }
 
-func transferPage(c echo.Context) error {
-	username := validateSession(c)
-	if username != "" {
-		return c.Render(http.StatusOK, "transfer", username)
+func transferLevel1Page(c echo.Context) error {
+	userProfile := validateSession(c)
+	if userProfile.Name != "" {
+		return c.Render(http.StatusOK, "transferLv1", userProfile.Name)
+	}
+
+	return c.Redirect(http.StatusFound, "/login")
+}
+
+func transferLevel2Page(c echo.Context) error {
+	userProfile := validateSession(c)
+	if userProfile.Name != "" {
+		return c.Render(http.StatusOK, "transferLv2", userProfile.Name)
+	}
+
+	return c.Redirect(http.StatusFound, "/login")
+}
+
+func transferLevel21Page(c echo.Context) error {
+	userProfile := validateSession(c)
+	if userProfile.Name != "" {
+		return c.Render(http.StatusOK, "transferLv2_1", userProfile.Name)
 	}
 
 	return c.Redirect(http.StatusFound, "/login")
 }
 
 func transferGet(c echo.Context) error {
-	username := validateSession(c)
-	if username == "" {
+	userProfile := validateSession(c)
+	if userProfile.Name == "" {
 		return c.Redirect(http.StatusFound, "/login")
 	}
 	toParam := c.QueryParam("to")
 	amountParam := c.QueryParam("amount")
 	amount, _ := strconv.Atoi(amountParam)
-
-	myBalance = myBalance - amount
-	return c.String(http.StatusOK, "successfully transfer "+amountParam+" baht to "+toParam+" You have "+strconv.Itoa(myBalance)+" baht left")
+	userProfile.Balance = userProfile.Balance - amount
+	data := struct {
+		To      string
+		Amount  int
+		Balance int
+	}{
+		To:      toParam,
+		Amount:  amount,
+		Balance: userProfile.Balance,
+	}
+	return c.Render(http.StatusOK, "result", data)
 }
 
 func transferPost(c echo.Context) error {
-	username := validateSession(c)
-	if username == "" {
+	userProfile := validateSession(c)
+	if userProfile.Name == "" {
 		return c.Redirect(http.StatusFound, "/login")
 	}
 	toParam := c.FormValue("to")
 	amountParam := c.FormValue("amount")
 	amount, _ := strconv.Atoi(amountParam)
 
-	myBalance = myBalance - amount
-	return c.String(http.StatusOK, "successfully transfer "+amountParam+" baht to "+toParam+" You have "+strconv.Itoa(myBalance)+" baht left")
+	userProfile.Balance = userProfile.Balance - amount
+	data := struct {
+		To      string
+		Amount  int
+		Balance int
+	}{
+		To:      toParam,
+		Amount:  amount,
+		Balance: userProfile.Balance,
+	}
+	return c.Render(http.StatusOK, "result", data)
+}
+
+func transferPostRedirect(c echo.Context) error {
+	userProfile := validateSession(c)
+	if userProfile.Name == "" {
+		return c.Redirect(http.StatusFound, "/login")
+	}
+	amountParam := c.FormValue("amount")
+	amount, _ := strconv.Atoi(amountParam)
+
+	userProfile.Balance = userProfile.Balance - amount
+	return c.Redirect(http.StatusSeeOther, "/result")
 }
 
 func transferPostJSON(c echo.Context) error {
-	username := validateSession(c)
-	if username == "" {
+	userProfile := validateSession(c)
+	if userProfile.Name == "" {
 		return c.Redirect(http.StatusFound, "/login")
 	}
 	body := struct {
@@ -170,8 +239,8 @@ func transferPostJSON(c echo.Context) error {
 		c.String(http.StatusBadRequest, "error reading body "+err.Error())
 	}
 
-	myBalance = myBalance - body.Amount
-	return c.String(http.StatusOK, "successfully transfer "+strconv.Itoa(body.Amount)+" baht to "+body.To+" You have "+strconv.Itoa(myBalance)+" baht left")
+	userProfile.Balance = userProfile.Balance - body.Amount
+	return c.String(http.StatusOK, "successfully transfer "+strconv.Itoa(body.Amount)+" baht to "+body.To+" You have "+strconv.Itoa(userProfile.Balance)+" baht left")
 }
 
 type Template struct {
