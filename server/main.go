@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -61,7 +62,11 @@ func main() {
 	e.GET("/", indexPage)
 	e.Static("/", "public")
 
-	e.Logger.Fatal(e.Start(":1323"))
+	port, ok := os.LookupEnv("PORT")
+	if !ok {
+		port = "1323"
+	}
+	e.Logger.Fatal(e.Start(":" + port))
 }
 
 func indexPage(c echo.Context) error {
