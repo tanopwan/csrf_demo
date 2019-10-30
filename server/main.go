@@ -52,13 +52,14 @@ func main() {
 	e.GET("/transfer/level1", transferLevel1Page)
 	e.GET("/transfer/level2", transferLevel2Page)
 	e.GET("/transfer/level2/1", transferLevel21Page)
+	e.GET("/transfer/level2/2", transferLevel22Page)
 	e.POST("/api/login", login)
 	e.POST("/api/logout", logout)
 	e.GET("/api/transfer", transferGet)
 	e.POST("/api/transfer2", transferPost)
 	e.POST("/api/transfer2/1", transferPostRedirect)
+	e.PUT("/api/transfer2/2", transferPost)
 	e.POST("/api/transfer3", transferPostJSON)
-	e.PUT("/api/transfer2", transferPost)
 	e.GET("/", indexPage)
 	e.Static("/", "public")
 
@@ -170,6 +171,15 @@ func transferLevel21Page(c echo.Context) error {
 	userProfile := validateSession(c)
 	if userProfile.Name != "" {
 		return c.Render(http.StatusOK, "transferLv2_1", userProfile.Name)
+	}
+
+	return c.Redirect(http.StatusFound, "/login")
+}
+
+func transferLevel22Page(c echo.Context) error {
+	userProfile := validateSession(c)
+	if userProfile.Name != "" {
+		return c.Render(http.StatusOK, "transferLv2_2", userProfile.Name)
 	}
 
 	return c.Redirect(http.StatusFound, "/login")
