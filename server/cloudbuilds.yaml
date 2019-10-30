@@ -1,0 +1,17 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [ 'build',
+            '-t', 'asia.gcr.io/$PROJECT_ID/noob-server:latest',
+            '-t', 'asia.gcr.io/$PROJECT_ID/noob-server', '.' ]
+#  - name: 'gcr.io/deploys-app/cli'
+#    args:
+#      - 'deployment'
+#      - 'set'
+#      - 'image'
+#      - 'noob-server'
+#      - '-project=$PROJECT_ID'
+#      - '-image=asia.gcr.io/$PROJECT_ID/noob-server:$_APP_VERSION'
+substitutions:
+  _APP_VERSION: "0" # default value
+images:
+  - 'asia.gcr.io/$PROJECT_ID/noob-server'
