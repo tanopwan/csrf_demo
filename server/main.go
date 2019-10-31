@@ -53,6 +53,7 @@ func main() {
 	e.GET("/transfer/level2", transferLevel2Page)
 	e.GET("/transfer/level2/1", transferLevel21Page)
 	e.GET("/transfer/level2/2", transferLevel22Page)
+	e.GET("/transfer/level3", transferLevel3Page)
 	e.POST("/api/login", login)
 	e.POST("/api/logout", logout)
 	e.GET("/api/transfer", transferGet)
@@ -185,6 +186,15 @@ func transferLevel22Page(c echo.Context) error {
 	return c.Redirect(http.StatusFound, "/login")
 }
 
+func transferLevel3Page(c echo.Context) error {
+	userProfile := validateSession(c)
+	if userProfile.Name != "" {
+		return c.Render(http.StatusOK, "transferLv3", userProfile.Name)
+	}
+
+	return c.Redirect(http.StatusFound, "/login")
+}
+
 func transferGet(c echo.Context) error {
 	userProfile := validateSession(c)
 	if userProfile.Name == "" {
@@ -255,7 +265,7 @@ func transferPostJSON(c echo.Context) error {
 	}
 
 	userProfile.Balance = userProfile.Balance - body.Amount
-	return c.String(http.StatusOK, "successfully transfer "+strconv.Itoa(body.Amount)+" baht to "+body.To+" You have "+strconv.Itoa(userProfile.Balance)+" baht left")
+	return c.Redirect(http.StatusSeeOther, "/result")
 }
 
 type Template struct {
