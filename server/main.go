@@ -24,9 +24,17 @@ type UserProfile struct {
 	Balance int
 }
 
+func getEnvOrDefault(key string, defaultValue string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		return defaultValue
+	}
+	return value
+}
+
 func main() {
-	corsPtr := flag.Bool("cors", false, "true to enable CORS")
-	credPtr := flag.Bool("cred", false, "true to enable credentials with")
+	envCORS := getEnvOrDefault("ENABLE_CORS", "false")
+
 	domainPtr := flag.String("domain", "localhost", "domain of the cookie")
 	domain = *domainPtr
 
@@ -39,12 +47,10 @@ func main() {
 	sessions = make(map[int]*UserProfile)
 	e := echo.New()
 	e.Renderer = t
-	if *corsPtr && *credPtr {
+	if envCORS == "true" {
 		e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 			AllowCredentials: true,
 		}))
-	} else if *corsPtr {
-		e.Use(middleware.CORS())
 	}
 
 	e.GET("/result", resultPage)
@@ -64,10 +70,7 @@ func main() {
 	e.GET("/", indexPage)
 	e.Static("/", "public")
 
-	port, ok := os.LookupEnv("PORT")
-	if !ok {
-		port = "1323"
-	}
+	port := getEnvOrDefault("PORT", "1323")
 	e.Logger.Fatal(e.Start(":" + port))
 }
 

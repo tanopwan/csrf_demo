@@ -7,5 +7,6 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-w -extldflags "-static"' \
 
 FROM scratch
 COPY --from=builder /go/src/csrf_demo/server /
+COPY ./public ./public
 
 CMD ["/main"]
