@@ -35,7 +35,7 @@ func getEnvOrDefault(key string, defaultValue string) string {
 func main() {
 	envCORS := getEnvOrDefault("ENABLE_CORS", "false")
 
-	domainPtr := flag.String("domain", "localhost", "domain of the cookie")
+	domainPtr := flag.String("domain", "", "domain of the cookie")
 	domain = *domainPtr
 
 	flag.Parse()
@@ -60,6 +60,7 @@ func main() {
 	e.GET("/transfer/level2/1", transferLevel21Page)
 	e.GET("/transfer/level2/2", transferLevel22Page)
 	e.GET("/transfer/level3", transferLevel3Page)
+	e.GET("/transfer/level3/1", transferLevel31Page)
 	e.POST("/api/login", login)
 	e.POST("/api/logout", logout)
 	e.GET("/api/transfer", transferGet)
@@ -193,6 +194,15 @@ func transferLevel3Page(c echo.Context) error {
 	userProfile := validateSession(c)
 	if userProfile.Name != "" {
 		return c.Render(http.StatusOK, "transferLv3", userProfile.Name)
+	}
+
+	return c.Redirect(http.StatusFound, "/login")
+}
+
+func transferLevel31Page(c echo.Context) error {
+	userProfile := validateSession(c)
+	if userProfile.Name != "" {
+		return c.Render(http.StatusOK, "transferLv3_1", userProfile.Name)
 	}
 
 	return c.Redirect(http.StatusFound, "/login")

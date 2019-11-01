@@ -11,7 +11,5 @@ steps:
 #      - 'noob-server'
 #      - '-project=$PROJECT_ID'
 #      - '-image=asia.gcr.io/$PROJECT_ID/noob-server:$_APP_VERSION'
-#substitutions:
-#  _APP_VERSION: "0" # default value
 images:
   - 'asia.gcr.io/$PROJECT_ID/noob-server'
