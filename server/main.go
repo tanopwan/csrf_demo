@@ -76,7 +76,10 @@ func main() {
 }
 
 func indexPage(c echo.Context) error {
-	return c.Render(http.StatusOK, "index", nil)
+
+	envCORS := getEnvOrDefault("ENABLE_CORS", "false")
+
+	return c.Render(http.StatusOK, "index", envCORS)
 }
 
 func logout(c echo.Context) error {

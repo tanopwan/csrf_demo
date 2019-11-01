@@ -3,12 +3,15 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
 </head>
 <body style="background: linear-gradient(to right, #ea1d6f 0%, #eb466b 100%);">
+{{if eq . "false"}}
     <a href="/transfer/level1" style="text-decoration: none; color: rgba(0, 0, 0, .4); font-family: 'Montserrat', sans-serif; font-size: 100px;" onMouseOver="this.style.color='rgba(0, 0, 0, .4)'" onMouseOut="this.style.color='rgba(0, 0, 0, .4)'"><i class="fas fa-piggy-bank fa-2x"></i> Level 1</a><br>
     <a href="/transfer/level2" style="text-decoration: none; color: rgba(0, 0, 0, .4); font-family: 'Montserrat', sans-serif; font-size: 100px;" onMouseOver="this.style.color='rgba(0, 0, 0, .4)'" onMouseOut="this.style.color='rgba(0, 0, 0, .4)'"><i class="fas fa-igloo fa-2x"></i> Level 2</a><br>
     <a href="/transfer/level2/1" style="text-decoration: none; color: rgba(0, 0, 0, .4); font-family: 'Montserrat', sans-serif; font-size: 100px;" onMouseOver="this.style.color='rgba(0, 0, 0, .4)'" onMouseOut="this.style.color='rgba(0, 0, 0, .4)'"><i class="fas fa-home fa-2x"></i> Level 2.1</a><br>
     <a href="/transfer/level2/2" style="text-decoration: none; color: rgba(0, 0, 0, .4); font-family: 'Montserrat', sans-serif; font-size: 100px;" onMouseOver="this.style.color='rgba(0, 0, 0, .4)'" onMouseOut="this.style.color='rgba(0, 0, 0, .4)'"><i class="fas fa-university fa-2x"></i> Level 2.2</a><br>
     <a href="/transfer/level3" style="text-decoration: none; color: rgba(0, 0, 0, .4); font-family: 'Montserrat', sans-serif; font-size: 100px;" onMouseOver="this.style.color='rgba(0, 0, 0, .4)'" onMouseOut="this.style.color='rgba(0, 0, 0, .4)'"><i class="fas fa-warehouse fa-2x"></i> Level 3</a><br>
+{{else}}
     <a href="/transfer/level3/1" style="text-decoration: none; color: rgba(0, 0, 0, .4); font-family: 'Montserrat', sans-serif; font-size: 100px;" onMouseOver="this.style.color='rgba(0, 0, 0, .4)'" onMouseOut="this.style.color='rgba(0, 0, 0, .4)'"><i class="fas fa-warehouse fa-2x"></i> Level 3 Fck up!</a><br>
+{{end}}
 </body>
 </html>
 {{end}}
