@@ -85,9 +85,9 @@ func main() {
 func indexPage(c echo.Context) error {
 	serverMode := getEnvOrDefault("SERVER_MODE", "NO_CORS")
 	if serverMode == "HARD_CORS" {
-		return c.Render(http.StatusOK, "index", true)
+		return c.Render(http.StatusOK, "index", "true")
 	}
-	return c.Render(http.StatusOK, "index", false)
+	return c.Render(http.StatusOK, "index", "false")
 }
 
 func logout(c echo.Context) error {
