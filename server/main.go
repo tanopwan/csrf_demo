@@ -269,7 +269,7 @@ func transferPostXHR(c echo.Context) error {
 
 	userProfile := validateSession(c)
 	if userProfile.Name == "" {
-		return c.Redirect(http.StatusFound, "/login")
+		return c.String(http.StatusBadRequest, "error reading session")
 	}
 	body := struct {
 		To     string `json:"to"`
@@ -277,11 +277,11 @@ func transferPostXHR(c echo.Context) error {
 	}{}
 	err := c.Bind(&body)
 	if err != nil {
-		c.String(http.StatusBadRequest, "error reading body "+err.Error())
+		return c.String(http.StatusBadRequest, "error reading body "+err.Error())
 	}
 
 	userProfile.Balance = userProfile.Balance - body.Amount
-	return c.Redirect(http.StatusSeeOther, "/result")
+	return c.String(http.StatusOK, "success")
 }
 
 func transferPostRedirect(c echo.Context) error {
@@ -299,7 +299,7 @@ func transferPostRedirect(c echo.Context) error {
 func transferPostJSON(c echo.Context) error {
 	userProfile := validateSession(c)
 	if userProfile.Name == "" {
-		return c.Redirect(http.StatusFound, "/login")
+		return c.String(http.StatusBadRequest, "error reading session")
 	}
 	body := struct {
 		To     string `json:"to"`
@@ -307,11 +307,11 @@ func transferPostJSON(c echo.Context) error {
 	}{}
 	err := c.Bind(&body)
 	if err != nil {
-		c.String(http.StatusBadRequest, "error reading body "+err.Error())
+		return c.String(http.StatusBadRequest, "error reading body "+err.Error())
 	}
 
 	userProfile.Balance = userProfile.Balance - body.Amount
-	return c.Redirect(http.StatusSeeOther, "/result")
+	return c.String(http.StatusOK, "success")
 }
 
 type Template struct {

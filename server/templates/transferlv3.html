@@ -28,7 +28,9 @@
       console.log(xhr.status)
       console.log(xhr.responseURL)
       console.log(xhr.responseText)
-      window.location = xhr.responseURL
+      if (xhr.readyState == XMLHttpRequest.DONE) {
+        window.location = "/result"
+      }
     }
   }
 
