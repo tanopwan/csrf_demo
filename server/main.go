@@ -50,10 +50,11 @@ func main() {
 	e := echo.New()
 	e.Renderer = t
 	if serverMode == "HARD_CORS" {
+		fmt.Printf("%v", strings.Fields(allowOrigins))
 		e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 			AllowOrigins:     strings.Fields(allowOrigins),
-			AllowMethods:     []string{"GET", "POST"},
-			AllowHeaders:     []string{"X-Requested-With"},
+			AllowMethods:     []string{"OPTIONS", "GET", "POST"},
+			AllowHeaders:     []string{"X-Requested-With", "Content-Type"},
 			AllowCredentials: true,
 		}))
 		//X-Frame-Options

