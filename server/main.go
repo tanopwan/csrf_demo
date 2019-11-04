@@ -271,10 +271,16 @@ func transferPostXHR(c echo.Context) error {
 	if userProfile.Name == "" {
 		return c.Redirect(http.StatusFound, "/login")
 	}
-	amountParam := c.FormValue("amount")
-	amount, _ := strconv.Atoi(amountParam)
+	body := struct {
+		To     string `json:"to"`
+		Amount int    `json:"amount"`
+	}{}
+	err := c.Bind(&body)
+	if err != nil {
+		c.String(http.StatusBadRequest, "error reading body "+err.Error())
+	}
 
-	userProfile.Balance = userProfile.Balance - amount
+	userProfile.Balance = userProfile.Balance - body.Amount
 	return c.Redirect(http.StatusSeeOther, "/result")
 }
 
