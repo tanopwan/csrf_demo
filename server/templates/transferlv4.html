@@ -1,4 +1,4 @@
-{{define "transferLv3_1"}}<!DOCTYPE html>
+{{define "transferLv4"}}<!DOCTYPE html>
 <html lang="en">
 <head title="Transfer">
   <link rel="stylesheet" type="text/css" href="/transfer.css">
@@ -14,7 +14,7 @@
 <script>
   function submit() {
     const xhr = new XMLHttpRequest();
-    const url='/api/transfer3';
+    const url='/api/transfer4';
     let body = {
       to: document.getElementById("txt-to").value,
       amount: parseInt(document.getElementById("txt-amount").value)
@@ -22,6 +22,7 @@
     console.log(body);
     xhr.open("POST", url);
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     xhr.send(JSON.stringify(body));
 
     xhr.onreadystatechange = (e) => {
@@ -53,7 +54,7 @@
           <div class="screen-body-item left">
             <div class="app-title">
               <span>NOOB BANK ,</span>
-              <span>Level 2/2</span>
+              <span>Level 4</span>
             </div>
             <div class="app-contact">Hint: Hmn, this is not form data. async..?</div>
           </div>

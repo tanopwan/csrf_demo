@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -33,7 +34,8 @@ func getEnvOrDefault(key string, defaultValue string) string {
 }
 
 func main() {
-	envCORS := getEnvOrDefault("ENABLE_CORS", "false")
+	serverMode := getEnvOrDefault("SERVER_MODE", "NO_CORS")
+	allowOrigins := getEnvOrDefault("ALLOW_ORIGINS", "*")
 
 	domainPtr := flag.String("domain", "", "domain of the cookie")
 	domain = *domainPtr
@@ -47,10 +49,14 @@ func main() {
 	sessions = make(map[int]*UserProfile)
 	e := echo.New()
 	e.Renderer = t
-	if envCORS == "true" {
+	if serverMode == "HARD_CORS" {
 		e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+			AllowOrigins:     strings.Fields(allowOrigins),
+			AllowMethods:     []string{"GET", "POST"},
+			AllowHeaders:     []string{"X-Requested-With"},
 			AllowCredentials: true,
 		}))
+		//X-Frame-Options
 	}
 
 	e.GET("/result", resultPage)
@@ -60,7 +66,7 @@ func main() {
 	e.GET("/transfer/level2/1", transferLevel21Page)
 	e.GET("/transfer/level2/2", transferLevel22Page)
 	e.GET("/transfer/level3", transferLevel3Page)
-	e.GET("/transfer/level3/1", transferLevel31Page)
+	e.GET("/transfer/level4", transferLevel4Page)
 	e.POST("/api/login", login)
 	e.POST("/api/logout", logout)
 	e.GET("/api/transfer", transferGet)
@@ -68,6 +74,7 @@ func main() {
 	e.POST("/api/transfer2/1", transferPostRedirect)
 	e.PUT("/api/transfer2/2", transferPost)
 	e.POST("/api/transfer3", transferPostJSON)
+	e.POST("/api/transfer4", transferPostXHR)
 	e.GET("/", indexPage)
 	e.Static("/", "public")
 
@@ -202,10 +209,10 @@ func transferLevel3Page(c echo.Context) error {
 	return c.Redirect(http.StatusFound, "/login")
 }
 
-func transferLevel31Page(c echo.Context) error {
+func transferLevel4Page(c echo.Context) error {
 	userProfile := validateSession(c)
 	if userProfile.Name != "" {
-		return c.Render(http.StatusOK, "transferLv3_1", userProfile.Name)
+		return c.Render(http.StatusOK, "transferLv4", userProfile.Name)
 	}
 
 	return c.Redirect(http.StatusFound, "/login")
@@ -252,6 +259,22 @@ func transferPost(c echo.Context) error {
 		Balance: userProfile.Balance,
 	}
 	return c.Render(http.StatusOK, "result", data)
+}
+
+func transferPostXHR(c echo.Context) error {
+	if c.Request().Header.Get("X-Requested-With") != "XMLHttpRequest" {
+		return c.String(http.StatusForbidden, "Only XMLHttpRequest is allowed")
+	}
+
+	userProfile := validateSession(c)
+	if userProfile.Name == "" {
+		return c.Redirect(http.StatusFound, "/login")
+	}
+	amountParam := c.FormValue("amount")
+	amount, _ := strconv.Atoi(amountParam)
+
+	userProfile.Balance = userProfile.Balance - amount
+	return c.Redirect(http.StatusSeeOther, "/result")
 }
 
 func transferPostRedirect(c echo.Context) error {
